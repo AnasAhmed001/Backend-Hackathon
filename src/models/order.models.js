@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 
 const Schema = mongoose.Schema;
 
-const dataSchema = new Schema(
+const orderSchema = new Schema(
   {
     title: {
       type: String,
@@ -20,6 +20,15 @@ const dataSchema = new Schema(
       type: String,
       required: true,
     },
+    orderDate: {
+      type: Date,
+      default: Date.now()
+    },
+    status: {
+      type: String,
+      enum: ["pending", "completed", "shipped"],
+      default: "pending"
+    },
     enrolledUsers: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Users'
@@ -30,4 +39,4 @@ const dataSchema = new Schema(
   }
 );
 
-export default mongoose.model("Data", dataSchema);
+export default mongoose.model("Order", orderSchema);

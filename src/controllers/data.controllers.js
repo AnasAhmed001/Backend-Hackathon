@@ -1,51 +1,83 @@
 import mongoose from "mongoose";
 import Data from "../models/data.models.js";
+import User from "../models/auth.models.js";
+import nodemailer from "nodemailer";
+
+const transporter = nodemailer.createTransport({
+  host: "smtp.ethereal.email",
+  port: 	587,
+  secure: false, 
+  auth: {
+    user: 'lowell.conn85@ethereal.email',
+    pass: 'eKTzZCMBHxwENe5h15'
+  },
+});
+
+
+const sendEmail = async (req, res) => {
+  const info = await transporter.sendMail({
+    from: '"		Lowell Conn👻" <lowell.conn85@ethereal.email>',
+    to: "hafizanasahmed8@gmail.com",
+    subject: "Congratulations! Internship Opportunity at Systems Limited", 
+    html: "<b>We are thrilled to inform you that you have been selected for the MERN Stack Developer Internship at Systems Limited. Your skills and passion for full-stack development have impressed us, and we are excited to have you on board as part of our dynamic team.</b>",
+  });
+
+  console.log("Message sent: %s", info.messageId);
+  res.send(info);
+};
+
 
 
 const addData = async (req, res) => {
-  const { title, description, price, image } = req.body;
+  const { title, description, price, image, enrolledUsers } = req.body;
 
-  // Validate required fields
+
   if (!title || !description) {
     return res.status(400).json({
-      message: "title and description are required",
+      message: "Title and description are required",
     });
   }
 
   if (!price) {
     return res.status(400).json({
-      message: "price is required",
+      message: "Price is required",
     });
   }
 
   if (!image) {
     return res.status(400).json({
-      message: "image is required",
+      message: "Image is required",
     });
   }
 
   try {
-    // Create the data record
     const data = await Data.create({
       title,
       description,
       price,
       image,
+      enrolledUsers,
     });
 
-    // Respond with success message and created data
+
+    if (enrolledUsers) {
+      await User.findByIdAndUpdate(enrolledUsers, {
+        $push: { enrolledProducts: data._id },
+      });
+    }
+
     return res.status(201).json({
-      message: "data added to database successfully",
+      message: "Data added to database and enrolledProducts updated successfully",
       data,
     });
   } catch (error) {
-    // Handle any errors during data creation
     return res.status(500).json({
-      message: "server error",
+      message: "Server error",
       error,
     });
   }
 };
+
 
 
 
@@ -56,14 +88,18 @@ const getAllData = async (req, res) => {
   const skip = (page - 1) * limit;
   try {
     const datas = await Data.find({}).skip(skip).limit(limit);
+
     res.status(200).json({
-      datas: datas, length: datas.length
+      datas: datas,
+      length: datas.length,
     });
   } catch (error) {
-    res.status(500).json({ error: "Something went wrong", details: error.message });
+    res.status(500).json({
+      error: "Something went wrong",
+      details: error.message,
+    });
   }
 };
-
 
 const getDataWithId = async (req, res) => {
   const { id } = req.params;
@@ -80,9 +116,15 @@ const getDataWithId = async (req, res) => {
       });
     }
 
-    res.status(200).json(data);
+    res.status(200).json({
+      message: "Data fetched successfully",
+      data: data,
+    });
   } catch (error) {
-    res.status(500).json({ error: "Something went wrong", details: error.message });
+    res.status(500).json({
+      error: "Something went wrong",
+      details: error.message,
+    });
   }
 };
 
@@ -94,20 +136,29 @@ const deleteData = async (req, res) => {
   }
 
   try {
-    const data = await Data.findOneAndDelete({ _id: id });
+    const data = await Data.findByIdAndDelete(id);
 
     if (!data) {
       return res.status(404).json({ error: "No data found" });
     }
 
+    await User.updateMany(
+      { enrolledProducts: id },
+      { $pull: { enrolledProducts: id } }
+    );
+
     res.status(200).json({
-      message: "Data deleted successfully",
-      data,
+      message: "Data deleted successfully and removed from enrolledProducts",
+      data: data,
     });
   } catch (error) {
-    res.status(500).json({ error: "Something went wrong", details: error.message });
+    res.status(500).json({
+      error: "Something went wrong",
+      details: error.message,
+    });
   }
 };
+
 
 const editData = async (req, res) => {
   const { id } = req.params;
@@ -118,8 +169,8 @@ const editData = async (req, res) => {
   }
 
   try {
-    const updatedData = await Data.findOneAndUpdate(
-      { _id: id },
+    const updatedData = await Data.findByIdAndUpdate(
+      id,
       { title, description, price, image },
       { new: true, runValidators: true }
     );
@@ -133,9 +184,13 @@ const editData = async (req, res) => {
       data: updatedData,
     });
   } catch (error) {
-    res.status(500).json({ error: "Something went wrong", details: error.message });
+    res.status(500).json({
+      error: "Something went wrong",
+      details: error.message,
+    });
   }
 };
 
 
-export { addData , getAllData , getDataWithId , deleteData, editData };
+
+export { addData, getAllData, getDataWithId, deleteData, editData, sendEmail };

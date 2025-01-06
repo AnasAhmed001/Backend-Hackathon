@@ -3,15 +3,14 @@ dotenv.config();
 import express from "express";
 import cookieParser from "cookie-parser";
 import cors from "cors";
-import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken";
 import connectDB from "./src/db/index.js";
 import authRoutes from "./src/routes/auth.routes.js";
 import dataRoutes from "./src/routes/data.routes.js";
-import courseRoute from "./src/routes/course.routes.js";
-import studentRoute from "./src/routes/student.routes.js";
+import orderRoutes from "./src/routes/order.routes.js";
 
 const app = express();
+
+const PORT = process.env.PORT || 3000;
 
 app.use(cors());
 app.use(express.json());
@@ -24,13 +23,12 @@ app.get("/", (req, res) => {
 // routes
 app.use("/api/v1", authRoutes);
 app.use("/api/v1", dataRoutes);
-app.use("/api/v1", courseRoute);
-app.use("/api/v1", studentRoute);
+app.use("/api/v1", orderRoutes);
 
 connectDB()
   .then(() => {
-    app.listen(process.env.PORT, () => {
-      console.log(`⚙️  Server is running at port : ${process.env.PORT}`);
+    app.listen(PORT, () => {
+      console.log(`⚙️  Server is running at port : ${PORT}`);
     });
   })
   .catch((err) => {
