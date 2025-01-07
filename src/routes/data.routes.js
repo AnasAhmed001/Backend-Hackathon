@@ -1,5 +1,5 @@
 import express from "express";
-import { addData , getAllData , getDataWithId , deleteData , editData , sendEmail} from "../controllers/data.controllers.js";
+import { addData, getAllData, getDataWithId, deleteData, editData, sendEmail } from "../controllers/data.controllers.js";
 
 const router = express.Router();
 

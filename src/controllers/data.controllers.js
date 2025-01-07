@@ -5,20 +5,20 @@ import nodemailer from "nodemailer";
 
 const transporter = nodemailer.createTransport({
   host: "smtp.ethereal.email",
-  port: 	587,
-  secure: false, 
+  port: 587,
+  secure: false,
   auth: {
-    user: 'lowell.conn85@ethereal.email',
-    pass: 'eKTzZCMBHxwENe5h15'
+    user: 'meggie.prohaska20@ethereal.email',
+    pass: 'dRvDAVcP9QQf9ekvMS'
   },
 });
 
 
 const sendEmail = async (req, res) => {
   const info = await transporter.sendMail({
-    from: '"		Lowell Conn👻" <lowell.conn85@ethereal.email>',
-    to: "hafizanasahmed8@gmail.com",
-    subject: "Congratulations! Internship Opportunity at Systems Limited", 
+    from: '"		Meggie Prohaska 👻" <meggie.prohaska20@ethereal.email>',
+    to: "mohammadasadiam64@gmail.com",
+    subject: "Congratulations! Internship Opportunity at Systems Limited",
     html: "<b>We are thrilled to inform you that you have been selected for the MERN Stack Developer Internship at Systems Limited. Your skills and passion for full-stack development have impressed us, and we are excited to have you on board as part of our dynamic team.</b>",
   });
 

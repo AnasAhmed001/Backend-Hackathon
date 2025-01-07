@@ -137,6 +137,7 @@ const loginUser = async (req, res) => {
       data: {
         userName: user.userName,
         email: user.email,
+        id: user.id,
       },
     });
   } catch (error) {
@@ -166,4 +167,6 @@ const refreshToken = async (req, res) => {
 
 
 export { registerUser, loginUser, logoutUser, refreshToken, uploadImage }
+
+
 
